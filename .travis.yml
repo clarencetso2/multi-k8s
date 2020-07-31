@@ -22,3 +22,4 @@ after_success:
   - docker push clarencetso2/multi-nginx
   - docker push clarencetso2/multi-server
   - docker push clarencetso2/multi-worker
+ 
