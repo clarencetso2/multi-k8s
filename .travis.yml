@@ -21,3 +21,15 @@ after_success:
   - docker push ctso2/multi-nginx
   - docker push ctso2/multi-server
   - docker push ctso2/multi-worker
+
+deploy:
+  edge: true
+  provider: elasticbeanstalk
+  region: us-east-2
+  app: multi-docker
+  bucket_name: elasticbeanstalk-us-east-2-604389414674
+  bucket_path: docker-multi
+  on:
+    branch: master
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
