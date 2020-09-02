@@ -1,3 +1,4 @@
+
 docker build -t ctso2/multi-client:latest -t ctso2/multi-client:$SHA -f ./client/Dockerfile ./client
 docker build -t ctso2/multi-server:latest -t ctso2/multi-server:$SHA -f ./server/Dockerfile ./server
 docker build -t ctso2/multi-worker:latest -t ctso2/multi-worker:$SHA -f ./worker/Dockerfile ./worker

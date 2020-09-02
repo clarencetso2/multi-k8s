@@ -14,7 +14,7 @@ before_install:
    #install kubctl
    - gcloud components update kubectl
    #authorize google cloud
-   - gcloud auth activate-service-account --key-filie service-account.json
+   - gcloud auth activate-service-account --key-file service-account.json
    #set project using unique ID in IAM
    - gcloud config set project master-chariot-287914
    #set compute zone
