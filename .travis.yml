@@ -1,36 +1,38 @@
 sudo: required
-language: generic
-
 services:
   - docker
-
+env:
+  global: #ENV variables
+    - SHA=$(git rev-parse HEAD) #get the unique identifier for commit
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1 #do not display user input prompts
 before_install:
-  - docker build -t stephengrider/react-test -f ./client/Dockerfile.dev ./client
+   #unencrypt Service Account
+   - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
+   #install google sdk, install instance on travis ci instance
+   - curl https://sdk.cloud.google.com | bash > /dev/null;
+   - source $HOME/google-cloud-sdk/path.bash.inc
+   #install kubctl
+   - gcloud components update kubectl
+   #authorize google cloud
+   - gcloud auth activate-service-account --key-filie service-account.json
+   #set project using unique ID in IAM
+   - gcloud config set project master-chariot-287914
+   #set compute zone
+   - gcloud config set compute/zone us-central1-c
+   #what cluster it needs to be working with when issue Kubernetes commands
+   - gcloud container clusters get-credentials multi-cluster
+   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+   #build test version
+   - docker build -t ctso2/react-test -f ./client/Dockerfile.dev ./client
 
-script:
-  - docker run stephengrider/react-test npm test -- --coverage
+  script:
+    #run Travis CLI test
+    - docker run -e CI=true ctso2/docker-react npm test
 
-after_success:
-  - docker build -t stephengrider/multi-client ./client
-  - docker build -t stephengrider/multi-nginx ./nginx
-  - docker build -t stephengrider/multi-server ./server
-  - docker build -t stephengrider/multi-worker ./worker
-  # Log in to the docker CLI
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  # Take those images and push them to docker hub
-  - docker push stephengrider/multi-client
-  - docker push stephengrider/multi-nginx
-  - docker push stephengrider/multi-server
-  - docker push stephengrider/multi-worker
-
-deploy:
-  provider: elasticbeanstalk
-  region: us-west-1
-  app: multi-docker
-  env: MultiDocker-env
-  bucket_name: elasticbeanstalk-us-west-1-306476627547
-  bucket_path: docker-multi
-  on:
-    branch: master
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
+  #deploy newest images if test successful
+  deploy:
+    provider: script
+    #have to do this from scratch since no built in provide for Kubernetes
+    script: bash ./deploy.sh
+    on:
+      branch: master
