@@ -25,14 +25,14 @@ before_install:
    #build test version
    - docker build -t ctso2/react-test -f ./client/Dockerfile.dev ./client
 
-  script:
+script:
     #run Travis CLI test
     - docker run -e CI=true ctso2/docker-react npm test
 
   #deploy newest images if test successful
-  deploy:
-    provider: script
-    #have to do this from scratch since no built in provide for Kubernetes
-    script: bash ./deploy.sh
-    on:
-      branch: master
+deploy:
+  provider: script
+  #have to do this from scratch since no built in provide for Kubernetes
+  script: bash ./deploy.sh
+  on:
+    branch: master
