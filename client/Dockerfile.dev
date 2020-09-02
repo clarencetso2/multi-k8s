@@ -2,12 +2,5 @@ FROM node:alpine
 WORKDIR '/app'
 COPY ./package.json ./
 RUN npm install
-<<<<<<< HEAD
 COPY . .
 CMD ["npm", "run", "start"]
-=======
-RUN npm install @testing-library/jest-dom
-
-COPY . .
-CMD ["npm", "run", "start"]
->>>>>>> 9b458223dd68c02568cbd31842ddb4e6ec90fdf9
