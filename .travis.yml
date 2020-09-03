@@ -27,7 +27,7 @@ before_install:
 
 script:
     #run Travis CLI test
-    - docker run -e CI=true ctso2/docker-react npm test
+    - docker run -e CI=true ctso2/react-test npm test
 
   #deploy newest images if test successful
 deploy:
